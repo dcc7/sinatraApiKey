@@ -1,7 +1,6 @@
 require "sinatra"
 require "sinatra/reloader"
 require "json"
-require "pry"
 require "httparty"
 require 'http'
 require 'rest-client'

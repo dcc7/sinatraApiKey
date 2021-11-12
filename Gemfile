@@ -1,2 +1,7 @@
 source 'https://rubygems.org'
 gem 'sinatra'
+gem 'sinatra-reloader'
+gem 'json', '~> 2.6'
+gem 'httparty'
+gem 'http', '~> 3.0'
+gem 'rest-client', '~> 1.8'
