@@ -1,8 +1,17 @@
 require "sinatra"
 require "sinatra/reloader"
 require "json"
+require "pry"
+require "httparty"
+require 'http'
+require 'rest-client'
 
 get "/" do
-  content_type :json
-  {api_key: "apikey WNcx5DP0AXfU0B3FZkQxs6FUrpKzAkpZy70C"}.to_json
+
+  results = HTTParty.get("https://api.transport.nsw.gov.au/v1/gtfs/vehiclepos/sydneytrains?debug=true", :headers => {
+  "Authorization" => "apikey 2rZpu5FuWGpahN4FBDm5rz7CFBIddMjeYKwf"
+})
+
+results.parsed_response
+
 end
