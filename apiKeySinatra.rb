@@ -12,6 +12,6 @@ get "/" do
   "Authorization" => "apikey 2rZpu5FuWGpahN4FBDm5rz7CFBIddMjeYKwf"
 })
 
-results.parsed_response
+results.parsed_response;
 
 end
