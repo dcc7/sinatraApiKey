@@ -1,6 +1,7 @@
 source 'https://rubygems.org'
 gem 'sinatra'
 gem 'sinatra-reloader'
+gem 'sinatra-cross_origin'
 gem 'json', '~> 2.6'
 gem 'httparty'
 gem 'http', '~> 3.0'
