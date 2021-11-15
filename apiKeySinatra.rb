@@ -5,9 +5,8 @@ require "json"
 require "httparty"
 require 'rest-client'
 require 'pry'
-require 'protobuf'
-require 'google/transit/gtfs-realtime.pb'
-require 'uri'
+
+
 
 set :bind, '0.0.0.0'
 configure do
@@ -26,30 +25,54 @@ end
 
 get "/" do
   results = HTTParty.get("https://api.transport.nsw.gov.au/v1/gtfs/vehiclepos/sydneytrains?debug=true", :headers => {
-    "Authorization" => "apikey r8aueiiLOTKZSGo91lOOiktLtcySJeXaZyM5"
-  })
+  "Authorization" => "apikey 2rZpu5FuWGpahN4FBDm5rz7CFBIddMjeYKwf"
+})
+  labels = [];
+  longituds = [];
+  latituds = [];
+  dataInJson = results.parsed_response;
+  dataInJson.each_line do |line|
+    longituds << line if line.include?("longitud")
+    latituds << line if line.include?("latitud")
+    labels << line if line.include?("label")
+  end
 
-  data = results.parsed_response;
-end
+    #Need to clean up the data in each array.
+   cleanLongituds = longituds.map { |coordinate| coordinate[17..23].to_f }
+   cleanLatituds = latituds.map { |coordinate| coordinate[16..23].to_f }
+   cleanLabelsOrigin = labels.map { |stations| stations[20...-3].split.first }
+   cleanLabelsDestination = labels.map { |stations| stations[20...-3].chomp("Station").split.last }
+   #loop through each and create an array of hashes.
 
-#
-# def get_results
-#   results = HTTParty.get(URI.parse("https://api.transport.nsw.gov.au/v1/gtfs/vehiclepos/sydneytrains"), :headers => {
-#     "Authorization" => "apikey r8aueiiLOTKZSGo91lOOiktLtcySJeXaZyM5"
-#   })
-#
-#
-#   feed = Transit_realtime::FeedMessage.decode(results)
-#   trip_data = []
-#   for entity in feed.entity do
-#     if entity.field?(:position)
-#       trip_data << entity.position
-#     end
-#   end
-#   trip_data.to_json
-# end
-#
-# get "/" do
-#   get_results
-#     binding.pry
-# end
+   # Empty object
+
+   # trainTrips = {}
+   resultArray = [];
+  i = 0
+  loop do
+     resultArray[i]= {
+       "origin" => cleanLabelsOrigin[i],
+       "destination" => cleanLabelsDestination[i],
+       "lat" => cleanLatituds[i],
+       "lng" => cleanLongituds[i],
+       "trip_id" => i+1,
+     }
+     # trainTrips[:origin] =  cleanLabelsOrigin[i]
+     # trainTrips[:destination] = cleanLabelsDestination[i]
+     # trainTrips[:latitud] = cleanLatituds[i]
+     # trainTrips[:longitud] = cleanLongituds[i]
+     # trainTrips[:trip_id] =  i+1
+     # resultArray.push(trainTrips)
+    i = i + 1
+    if i == labels.length();
+     break       # this will cause execution to exit the loop
+   end
+  end
+
+finalArray = resultArray.to_json
+
+finalArray
+
+
+ # binding.pry
+ end
