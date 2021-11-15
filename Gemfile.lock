@@ -1,10 +1,22 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    activesupport (6.1.4.1)
+      concurrent-ruby (~> 1.0, >= 1.0.2)
+      i18n (>= 1.6, < 2)
+      minitest (>= 5.1)
+      tzinfo (~> 2.0)
+      zeitwerk (~> 2.3)
     addressable (2.8.0)
       public_suffix (>= 2.0.2, < 5.0)
+    concurrent-ruby (1.1.9)
     domain_name (0.5.20190701)
       unf (>= 0.0.5, < 1.0.0)
+    google-protobuf (3.19.1)
+    google-protobuf (3.19.1-x86_64-darwin)
+    google-protobuf (3.19.1-x86_64-linux)
+    gtfs-realtime-bindings (0.0.5)
+      protobuf (>= 3.0)
     http (3.3.0)
       addressable (~> 2.3)
       http-cookie (~> 1.0)
@@ -16,13 +28,22 @@ GEM
     http_parser.rb (0.6.0)
     httparty (0.16.2)
       multi_xml (>= 0.5.2)
+    i18n (1.8.11)
+      concurrent-ruby (~> 1.0)
     json (2.6.1)
+    middleware (0.1.0)
     mime-types (2.99.3)
+    minitest (5.14.4)
     multi_json (1.15.0)
     multi_xml (0.6.0)
     mustermann (1.1.1)
       ruby2_keywords (~> 0.0.1)
     netrc (0.11.0)
+    protobuf (3.10.5)
+      activesupport (>= 3.2)
+      middleware
+      thor
+      thread_safe
     public_suffix (4.0.6)
     rack (2.2.3)
     rack-protection (2.1.0)
@@ -46,10 +67,16 @@ GEM
     sinatra-cross_origin (0.4.0)
     sinatra-reloader (1.0)
       sinatra-contrib
+    thor (1.1.0)
+    thread_safe (0.3.6)
     tilt (2.0.10)
+    tzinfo (2.0.4)
+      concurrent-ruby (~> 1.0)
     unf (0.1.4)
       unf_ext
     unf_ext (0.0.8)
+    uri (0.11.0)
+    zeitwerk (2.5.1)
 
 PLATFORMS
   ruby
@@ -57,6 +84,8 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
+  google-protobuf (~> 3.19, >= 3.19.1)
+  gtfs-realtime-bindings (~> 0.0.5)
   http (~> 3.0)
   httparty
   json (~> 2.6)
@@ -64,6 +93,7 @@ DEPENDENCIES
   sinatra
   sinatra-cross_origin
   sinatra-reloader
+  uri
 
 BUNDLED WITH
    2.2.29
