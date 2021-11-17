@@ -8,8 +8,8 @@ require 'pry'
 require './routesJSON.rb'
 require './stopsJSON.rb'
 
-all_routes = $ROUTES
-all_stops = $STOPS
+$all_routes = $ROUTES
+$all_stops = $STOPS
 
 set :bind, '0.0.0.0'
 configure do
@@ -27,6 +27,37 @@ options "*" do
 end
 
 get "/" do
+
+  @train_positions = live_positions_array
+  @updates = live_updates_array
+
+  @train_positions.each do |train|
+    $all_routes.each do |route|
+      if train["route_id"] == route[:route_id]
+        train["route_id"] = route[:route_desc]
+      end
+    end
+
+    @updates.each do |update|
+      if train["trip_id"] == update["trip_id"]
+        train["stops"] = update["stop_ids"]
+      end
+    end
+
+    train["stops"].each_with_index do |stop, index|
+      $all_stops.each do |s|
+        if stop == s[:stop_id]
+          train["stops"][index] = s[:stop_name]
+        end
+      end
+    end
+  end
+
+  @train_positions.to_json
+end
+
+
+def live_positions_array
   results = HTTParty.get("https://api.transport.nsw.gov.au/v1/gtfs/vehiclepos/sydneytrains?debug=true", :headers => {
     "Authorization" => "apikey 2rZpu5FuWGpahN4FBDm5rz7CFBIddMjeYKwf"
   })
@@ -57,11 +88,11 @@ get "/" do
   clean_trip_id = trip_ids.map { |trip_id| trip_id.scan(/"([^"]*)"/)[0][0] }
 
   # loop through each and create an array of hashes.
-  result_array = []
+  @result_array = []
 
   i = 0
   loop do
-    result_array[i] = {
+    @result_array[i] = {
       "id" => i + 1,
       "time" => clean_labels_time[i],
       "origin" => clean_labels_origin[i],
@@ -78,18 +109,15 @@ get "/" do
     end
   end
 
-  final_array = result_array.to_json
-
-  final_array
+  @result_array
 end
 
-get "/updates" do
+def live_updates_array
   updates = HTTParty.get("https://api.transport.nsw.gov.au/v1/gtfs/realtime/sydneytrains?debug=true", :headers => {
     "Authorization" => "apikey r8aueiiLOTKZSGo91lOOiktLtcySJeXaZyM5"
   })
 
-  updates_in_proto = updates.parsed_response;
-
+  updates_in_proto = updates.parsed_response
   updates_array = []
 
   updates_in_proto.each_line do |line|
@@ -104,7 +132,6 @@ get "/updates" do
 
   counter = -1
   updates_array.each do |id|
-
     if id.include?("trip")
       trip_ids << id
       counter += 1
@@ -116,24 +143,23 @@ get "/updates" do
     end
   end
 
-
   trip_ids.map! { |trip_id| trip_id.scan(/"([^"]*)"/)[0][0] }
   route_ids.map! { |route_id| route_id.scan(/"([^"]*)"/)[0][0] }
   stop_ids.each do |stops|
     stops.map! { |stop_id| stop_id.scan(/"([^"]*)"/)[0][0] }
   end
 
-  result_array = []
+  @result_array = []
   i = 0
 
   while i < trip_ids.length
-    result_array[i] = {
+    @result_array[i] = {
       "trip_id" => trip_ids[i],
       "route_id" => route_ids[i],
       "stop_ids" => stop_ids[i],
     }
     i += 1
   end
-  final_array = result_array.to_json
-  final_array
+
+  @result_array
 end
