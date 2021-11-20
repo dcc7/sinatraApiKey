@@ -4,7 +4,7 @@ require "sinatra/cross_origin"
 require "json"
 require "httparty"
 require 'rest-client'
-require 'pry'
+# require 'pry'
 require './routesJSON.rb'
 require './stopsJSON.rb'
 
